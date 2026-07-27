@@ -67,7 +67,7 @@ class Token(Base):
     __tablename__ = "token"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[uuid.UUID] = mapped_column(
+    token: Mapped[uuid.UUID] = mapped_column(
         Uuid,
         server_default=func.gen_random_uuid(),
         unique=True, 

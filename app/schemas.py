@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
+import models
 
 
 class CreateAdvRequest(BaseModel):
@@ -49,7 +50,7 @@ class SearchAdvResponse(BaseModel):
     title: str
     description: str
     price: int
-    author: str
+    # author: str
     created_at: Optional[str] = None
 
 class LoginRequest(BaseModel):
@@ -66,7 +67,7 @@ class LoginResponse(BaseModel):
 class CreateUserRequest(BaseModel):
     username: str
     password: str
-    role: Optional[str] = "role_user"
+    role: Optional[type[models.Role]]
 
 class IdResponse(BaseModel):
     id: int

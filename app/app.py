@@ -32,40 +32,40 @@ async def create_adv(
 
 @app.patch("/advertisement/{advertisement_id}", response_model=schemas.UpdateAdvResponse, summary="Обновить объявление") # юзер (свое)
 async def update_adv(
-        item_id: int,
+        advertisement_id: int,
         update_data: schemas.UpdateAdvRequest,
         token_obj: Token = Depends(check_token),
         session: AsyncSession = Depends(get_db_session)
 ):
-    updated_adv = await update_item(session, Adv, item_id, token_obj, update_data)
+    updated_adv = await update_item(session, Adv, advertisement_id, token_obj, update_data)
     return schemas.UpdateAdvResponse(**updated_adv.to_dict())
 
 
 @app.delete("/advertisement/{advertisement_id}", response_model=schemas.OKResponse, summary="Удалить объявление") # юзер (свое)
 async def delete_adv(
-        item_id: int,
+        advertisement_id: int,
         token_obj: Token = Depends(check_token),
         session: AsyncSession = Depends(get_db_session)
 ):
-    await delete_item(session, Adv, item_id, token_obj)
+    await delete_item(session, Adv, advertisement_id, token_obj)
     return schemas.OKResponse()
 
 
 @app.get("/advertisement/{advertisement_id}", response_model=schemas.GetAdvResponse, summary="Получить объявление по ID") # без токена
 async def get_adv(
-        item_id: int,
+        advertisement_id: int,
         session: AsyncSession = Depends(get_db_session),
 ):
-    adv = await get_item(session, Adv, item_id)
+    adv = await get_item(session, Adv, advertisement_id)
     return schemas.GetAdvResponse(**adv.to_dict())
 
 
-@app.get("/advertisement?{query_string}", response_model=schemas.SearchAdvResponse, summary="Найти объявление по полю") # без токена
+@app.get("/advertisement", response_model=schemas.SearchAdvResponse, summary="Найти объявление по полю") # без токена
 async def search_adv(
-        item_data: schemas.SearchAdvRequest,
+        advertisement_data: schemas.SearchAdvRequest,
         session: AsyncSession = Depends(get_db_session)
 ):
-    searched_adv = await search_item(session, Adv, item_data)
+    searched_adv = await search_item(session, Adv, advertisement_data)
     return schemas.SearchAdvResponse(**searched_adv.to_dict())
 
 
