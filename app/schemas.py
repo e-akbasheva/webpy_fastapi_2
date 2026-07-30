@@ -67,7 +67,7 @@ class LoginResponse(BaseModel):
 class CreateUserRequest(BaseModel):
     username: str
     password: str
-    role: Optional[type[models.Role]]
+    role: Optional[type[models.Role]] = models.Role(name="user")    
 
 class IdResponse(BaseModel):
     id: int
