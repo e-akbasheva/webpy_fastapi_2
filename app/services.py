@@ -6,17 +6,17 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import models
+from models import Role, Right, Token, Adv, User
 import schemas
 from auth import check_password, hash_password, check_token, check_object_access
 
 
 async def add_item(
         session: AsyncSession,
-        token_obj: type[models.Token],
-        orm_model: type[models.Adv],
+        token_obj: type[Token],
+        orm_model: type[Adv],
         item_data: schemas.CreateAdvRequest
-) -> models.Adv:
+) -> Adv:
     """
     Создание записи и добавление в БД.
     """
@@ -44,11 +44,11 @@ async def add_item(
 
 async def update_item(
         session: AsyncSession,
-        orm_model: type[models.Adv],
+        orm_model: type[Adv],
         item_id: int,
-        token_obj: type[models.Token],
+        token_obj: type[Token],
         update_data: schemas.UpdateAdvRequest
-) -> models.Adv:
+) -> Adv:
     """
     Обновление объекта.
     """
@@ -76,9 +76,9 @@ async def update_item(
 
 async def delete_item(
         session: AsyncSession,
-        orm_model: type[models.Adv],
+        orm_model: type[Adv],
         item_id: int,
-        token_obj: type[models.Token],
+        token_obj: type[Token],
 ) -> None:
     """
     Удаление объекта.
@@ -99,9 +99,9 @@ async def delete_item(
 
 async def get_item(
         session: AsyncSession,
-        orm_model: type[models.Adv],
+        orm_model: type[Adv],
         item_id: int
-) -> models.Adv:
+) -> Adv:
     """
     Получение объекта по ID или выброс ошибки 404.
     """
@@ -119,9 +119,9 @@ async def get_item(
 
 async def search_item(
         session: AsyncSession,
-        orm_model: type[models.Adv],
+        orm_model: type[Adv],
         item_data: schemas.SearchAdvRequest
-) -> models.Adv:
+) -> Adv:
     """
     Поиск записи по полям.
     """
@@ -153,10 +153,10 @@ async def search_item(
 
 async def check_item_access(
         session: AsyncSession,
-        orm_model: type[models.Adv],
-        item: type[models.Adv],
+        orm_model: type[Adv],
+        item: type[Adv],
         item_id: int,
-        token_obj: type[models.Token]
+        token_obj: type[Token]
 ): # -> Bool
     """
     Проверка доступа к записи или выброс ошибки 403.
@@ -177,17 +177,20 @@ async def check_item_access(
 
 async def add_user(
         session: AsyncSession,
-        orm_model: type[models.User],
+        orm_model: type[User],
         user_data: schemas.CreateUserRequest
-) -> models.User:
+) -> User:
     """
     Создание пользователя (с группой user).
     """
     hashed_password = hash_password(user_data.password)
+    stmt = select(Role).where(Role.name == user_data.role)
+    role = await session.scalar(stmt)
+
     new_user = orm_model(
         name=user_data.username, 
         password=hashed_password,
-        roles=user_data.role
+        roles=[role] if role else []
     )
     session.add(new_user)
     await session.commit()

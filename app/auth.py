@@ -56,6 +56,9 @@ async def check_object_access(
     if not isinstance(orm_object, type) and hasattr(orm_object, 'user_id'):
         if orm_object.user_id != user.id:
             where_args.append(Right.only_own==False)
+    elif not isinstance(orm_object, type) and hasattr(orm_object, 'id'):
+        if orm_object.id != user.id:
+            where_args.append(Right.only_own == False)
 
     query = (
         select(func.count())
